@@ -1,0 +1,7 @@
+
+class_name: AcceptanceTester
+modules:
+    enabled:
+        - Asserts
+        - \Cheppers\Robo\Compass\Test\Helper\Acceptance
+        - \Cheppers\Robo\Compass\Test\Helper\Module\RoboTaskRunner
