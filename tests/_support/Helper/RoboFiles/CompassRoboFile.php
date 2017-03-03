@@ -18,4 +18,13 @@ class CompassRoboFile extends Tasks
             ->setBoring(true)
             ->setSassDir('css-src');
     }
+
+    public function clean($dir): TaskInterface
+    {
+        return $this
+            ->taskCompassClean(['workingDirectory' =>  $dir])
+            ->setOutput($this->output())
+            ->setBoring(true)
+            ->setSassDir('css-src');
+    }
 }
