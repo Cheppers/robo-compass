@@ -3,6 +3,8 @@
 namespace Cheppers\Robo\Compass\Test\Helper\RoboFiles;
 
 use Cheppers\Robo\Compass\CompassTaskLoader;
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Robo\Contract\TaskInterface;
 use Robo\Tasks;
 
@@ -25,6 +27,19 @@ class CompassRoboFile extends Tasks
             ->taskCompassClean(['workingDirectory' =>  $dir])
             ->setOutput($this->output())
             ->setBoring(true)
+            ->setSassDir('css-src');
+    }
+
+    public function validate(
+        string $dir,
+        array $options = [
+            'boring' => false,
+        ]
+    ): TaskInterface {
+        return $this
+            ->taskCompassValidate(['workingDirectory' =>  $dir])
+            ->setOutput($this->output())
+            ->setBoring($options['boring'])
             ->setSassDir('css-src');
     }
 }

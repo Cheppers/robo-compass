@@ -9,9 +9,9 @@ use Symfony\Component\Filesystem\Filesystem;
 class CompassTaskCest
 {
     /**
-     * @var string
+     * @var string[]
      */
-    protected $tmpDir = '';
+    protected $tmpDirs = [];
 
     /**
      * @var null|\Symfony\Component\Filesystem\Filesystem
@@ -23,23 +23,17 @@ class CompassTaskCest
         $this->fs = new Filesystem();
     }
 
-    // @codingStandardsIgnoreStart
-    public function _before()
+    public function __destruct()
     {
-        $this->initTmpDir();
+        $this->fs->remove($this->tmpDirs);
     }
 
-    public function _after()
+    public function runCompileSuccess(AcceptanceTester $I): void
     {
-        $this->deleteTmpDir();
-    }
-    // @codingStandardsIgnoreEnd
-
-    public function runCompileSuccess(AcceptanceTester $I)
-    {
+        $tmpDir = $this->createTmpDir();
         $projectName = 'success';
         $projectDir = codecept_data_dir("fixtures/$projectName");
-        $this->fs->mirror($projectDir, $this->tmpDir);
+        $this->fs->mirror($projectDir, $tmpDir);
 
         $expectedStdOutput = implode("\n", [
             'directory stylesheets',
@@ -48,21 +42,23 @@ class CompassTaskCest
         ]);
         $expectedStdError = sprintf(
             " [Compass Compile] cd %s && bundle exec compass compile --boring --sass-dir 'css-src'\n",
-            escapeshellarg($this->tmpDir)
+            escapeshellarg($tmpDir)
         );
 
-        $I->runRoboTask(CompassRoboFile::class, 'compile', $this->tmpDir);
-        $I->assertEquals($expectedStdOutput, $I->getRoboTaskStdOutput());
-        $I->assertEquals($expectedStdError, $I->getRoboTaskStdError());
-        $I->assertEquals(0, $I->getRoboTaskExitCode());
-        $I->assertFileExists("{$this->tmpDir}/stylesheets/styles.css");
+        $id = 'compile:success';
+        $I->runRoboTask($id, CompassRoboFile::class, 'compile', $tmpDir);
+        $I->assertEquals($expectedStdOutput, $I->getRoboTaskStdOutput($id));
+        $I->assertEquals($expectedStdError, $I->getRoboTaskStdError($id));
+        $I->assertEquals(0, $I->getRoboTaskExitCode($id));
+        $I->assertFileExists("{$tmpDir}/stylesheets/styles.css");
     }
 
-    public function runCompileFail(AcceptanceTester $I)
+    public function runCompileFail(AcceptanceTester $I): void
     {
+        $tmpDir = $this->createTmpDir();
         $projectName = 'fail';
         $projectDir = codecept_data_dir("fixtures/$projectName");
-        $this->fs->mirror($projectDir, $this->tmpDir);
+        $this->fs->mirror($projectDir, $tmpDir);
 
         $expectedStdOutput = implode("\n", [
             'directory stylesheets',
@@ -70,52 +66,136 @@ class CompassTaskCest
             'Compilation failed in 1 files.',
             ''
         ]);
-        $expectedStdError = '';
+        $expectedStdError = sprintf(
+            " [Compass Compile] cd %s && bundle exec compass compile --boring --sass-dir 'css-src'\n",
+            escapeshellarg($tmpDir)
+        );
 
-        $I->runRoboTask(CompassRoboFile::class, 'compile', $this->tmpDir);
-        $I->assertEquals($expectedStdOutput, $I->getRoboTaskStdOutput());
-        $I->assertEquals($expectedStdError, $I->getRoboTaskStdError());
-        $I->assertEquals(1, $I->getRoboTaskExitCode());
+        $id = 'compile:fail';
+        $I->runRoboTask($id, CompassRoboFile::class, 'compile', $tmpDir);
+        $I->assertEquals($expectedStdOutput, $I->getRoboTaskStdOutput($id));
+        $I->assertContains($expectedStdError, $I->getRoboTaskStdError($id));
+        $I->assertEquals(1, $I->getRoboTaskExitCode($id));
     }
 
-    public function runCleanSuccess(AcceptanceTester $I)
+    public function runCleanSuccess(AcceptanceTester $I): void
     {
+        $tmpDir = $this->createTmpDir();
         $projectName = 'success';
         $projectDir = codecept_data_dir("fixtures/$projectName");
-        $this->fs->mirror($projectDir, $this->tmpDir);
+        $this->fs->mirror($projectDir, $tmpDir);
 
-        $I->runRoboTask(CompassRoboFile::class, 'compile', $this->tmpDir);
-        $I->assertFileExists("{$this->tmpDir}/stylesheets/styles.css");
+        $id = 'clean:success:prepare';
+        $I->runRoboTask($id, CompassRoboFile::class, 'compile', $tmpDir);
+        $I->assertFileExists("{$tmpDir}/stylesheets/styles.css");
 
         $expectedStdOutput = implode("\n", [
             '   delete stylesheets/styles.css',
             '',
         ]);
-        $expectedStdError = '';
+        $expectedStdError = sprintf(
+            " [Compass Clean] cd %s && bundle exec compass clean --boring --sass-dir 'css-src'\n",
+            escapeshellarg($tmpDir)
+        );
 
-        $I->runRoboTask(CompassRoboFile::class, 'clean', $this->tmpDir);
-        $I->assertEquals($expectedStdOutput, $I->getRoboTaskStdOutput());
-        $I->assertEquals($expectedStdError, $I->getRoboTaskStdError());
-        $I->assertEquals(0, $I->getRoboTaskExitCode());
-        $I->assertFileNotExists("{$this->tmpDir}/stylesheets/styles.css");
+        $id = 'clean:success:run';
+        $I->runRoboTask($id, CompassRoboFile::class, 'clean', $tmpDir);
+        $I->assertEquals($expectedStdOutput, $I->getRoboTaskStdOutput($id));
+        $I->assertEquals($expectedStdError, $I->getRoboTaskStdError($id));
+        $I->assertEquals(0, $I->getRoboTaskExitCode($id));
+        $I->assertFileNotExists("{$tmpDir}/stylesheets/styles.css");
     }
 
-    protected function initTmpDir()
+    public function runValidateSuccess(AcceptanceTester $I): void
     {
-        $dirName = tempnam(sys_get_temp_dir(), 'robo-compass.test');
+        $tmpDir = $this->createTmpDir();
+        $projectName = 'success';
+        $projectDir = codecept_data_dir("fixtures/$projectName");
+        $this->fs->mirror($projectDir, $tmpDir);
+
+        $expectedStdOutput = implode("\n", [
+            'directory stylesheets',
+            '    write stylesheets/styles.css',
+            '    valid stylesheets/styles.css',
+            '',
+            '',
+            '************************************************************',
+            '',
+            'Result: Valid',
+            '1 file validated.',
+            'So INTENSE!',
+            '',
+            '************************************************************',
+            '',
+        ]);
+        $expectedStdError = sprintf(
+            " [Compass Validate] cd %s && bundle exec compass validate --boring --sass-dir 'css-src'\n",
+            escapeshellarg($tmpDir)
+        );
+
+        $id = 'validate:success';
+        $I->runRoboTask($id, CompassRoboFile::class, 'validate', $tmpDir, '--boring');
+        $I->assertEquals($expectedStdOutput, $I->getRoboTaskStdOutput($id));
+        $I->assertEquals($expectedStdError, $I->getRoboTaskStdError($id));
+        $I->assertEquals(0, $I->getRoboTaskExitCode($id));
+        $I->assertFileExists("{$tmpDir}/stylesheets/styles.css");
+    }
+
+    public function runValidateFailWithColors(AcceptanceTester $I): void
+    {
+        $this->runValidateFail($I, false);
+    }
+
+    public function runValidateFailWithoutColors(AcceptanceTester $I): void
+    {
+        $this->runValidateFail($I, true);
+    }
+
+    protected function runValidateFail(AcceptanceTester $I, bool $boring): void
+    {
+        $tmpDir = $this->createTmpDir();
+        $projectName = 'invalid';
+        $projectDir = codecept_data_dir("fixtures/$projectName");
+        $this->fs->mirror($projectDir, $tmpDir);
+
+        $pattern = $boring ? "  %s %s\n" : "\e[31m  %s\e[0m %s\n";
+        $option = $boring ? ' --boring' : '';
+        $expectedStdOutput1 = sprintf($pattern, 'invalid', 'stylesheets/styles.css');
+        $expectedStdOutput2 = sprintf($pattern, 'invalid', 'stylesheets/foo/bar.css');
+        $expectedStdError = sprintf(
+            "cd %s && bundle exec compass validate{$option} --sass-dir 'css-src'",
+            escapeshellarg($tmpDir)
+        );
+
+        $args = [
+            'validate',
+            $tmpDir,
+        ];
+
+        if ($boring) {
+            $args[] = '--boring';
+        }
+
+        $id = 'validate:fail:' . (int) $boring;
+        $I->runRoboTask($id, CompassRoboFile::class, ...$args);
+        $I->assertEquals(1, $I->getRoboTaskExitCode($id));
+        $I->assertContains($expectedStdOutput1, $I->getRoboTaskStdOutput($id));
+        $I->assertContains($expectedStdOutput2, $I->getRoboTaskStdOutput($id));
+        $I->assertContains($expectedStdError, $I->getRoboTaskStdError($id));
+        $I->assertFileExists("{$tmpDir}/stylesheets/styles.css");
+    }
+
+    protected function createTmpDir(): string
+    {
+        $dirName = tempnam(sys_get_temp_dir(), 'robo-compass.test.');
         if (unlink($dirName)) {
             mkdir($dirName, 0777 - umask(), true);
             $this->fs->copy('Gemfile', "$dirName/Gemfile");
             $this->fs->copy('Gemfile.lock', "$dirName/Gemfile.lock");
         }
 
-        $this->tmpDir = $dirName;
-    }
+        $this->tmpDirs[] = $dirName;
 
-    protected function deleteTmpDir()
-    {
-        if ($this->tmpDir && file_exists($this->tmpDir)) {
-            $this->fs->remove($this->tmpDir);
-        }
+        return $dirName;
     }
 }

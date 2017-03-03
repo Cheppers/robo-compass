@@ -1,6 +1,6 @@
 {
     "name": "cheppers/robo-compass",
-    "description": "Template to create a new Robo task.",
+    "description": "Wrapper Robo task for Compass commands.",
     "license": "GPL-2.0",
     "config": {
         "bin-dir": "bin",

@@ -21,4 +21,12 @@ trait CompassTaskLoader
     {
         return $this->task(Task\CompassCleanTask::class, $options);
     }
+
+    /**
+     * @return \Cheppers\Robo\Compass\Task\CompassValidateTask|\Robo\Collection\CollectionBuilder
+     */
+    protected function taskCompassValidate(array $options = []): CollectionBuilder
+    {
+        return $this->task(Task\CompassValidateTask::class, $options);
+    }
 }

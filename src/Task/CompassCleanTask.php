@@ -11,8 +11,11 @@ class CompassCleanTask extends BaseTask
     /**
      * {@inheritdoc}
      */
-    protected $taskName = 'Compass Compile';
+    protected $taskName = 'Compass Clean';
 
+    /**
+     * {@inheritdoc}
+     */
     protected $action = 'clean';
 
     /**

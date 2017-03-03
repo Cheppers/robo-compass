@@ -166,6 +166,14 @@ abstract class BaseTask extends RoboBaseTask implements CommandInterface, AssetJ
     {
         foreach ($option as $name => $value) {
             switch ($name) {
+                case 'assetJar':
+                    $this->setAssetJar($value);
+                    break;
+
+                case 'assetJarMapping':
+                    $this->setAssetJarMapping($value);
+                    break;
+
                 case 'workingDirectory':
                     $this->setWorkingDirectory($value);
                     break;
@@ -334,8 +342,8 @@ abstract class BaseTask extends RoboBaseTask implements CommandInterface, AssetJ
     {
         return new Result(
             $this,
-            $this->actionExitCode,
-            $this->actionStdError,
+            $this->getTaskResultCode(),
+            $this->getTaskResultMessage(),
             $this->assets
         );
     }
@@ -351,5 +359,15 @@ abstract class BaseTask extends RoboBaseTask implements CommandInterface, AssetJ
                 $this->printTaskError($data);
                 break;
         }
+    }
+
+    protected function getTaskResultCode(): int
+    {
+        return $this->actionExitCode;
+    }
+
+    protected function getTaskResultMessage(): string
+    {
+        return $this->actionStdError;
     }
 }
