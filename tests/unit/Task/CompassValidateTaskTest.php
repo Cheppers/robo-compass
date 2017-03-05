@@ -86,21 +86,66 @@ class CompassValidateTaskTest extends Unit
         $this->tester->assertEquals($expected, $task->getCommand());
     }
 
-    public function testRun(): void
+    public function casesRun(): array
     {
-        $expectedExitCode = 1;
-        $expectedInvalidFiles = [
-            'a.css',
-            'b.css',
+        return [
+            'invalid false' => [
+                [
+                    'exitCode' => 0,
+                    'invalidFiles' => [
+                        'a.css',
+                        'b.css',
+                    ],
+                ],
+                [
+                    'failOnInvalid' => false,
+                ],
+                [
+                    'exitCode' => 0,
+                    'stdOutput' => implode("\n", [
+                        '  invalid a.css',
+                        '  invalid b.css',
+                        '',
+                    ]),
+                    'stdError' => '',
+                ],
+            ],
+            'invalid true' => [
+                [
+                    'exitCode' => 1,
+                    'invalidFiles' => [
+                        'a.css',
+                        'b.css',
+                    ],
+                ],
+                [
+                    'failOnInvalid' => true,
+                ],
+                [
+                    'exitCode' => 0,
+                    'stdOutput' => implode("\n", [
+                        '  invalid a.css',
+                        '  invalid b.css',
+                        '',
+                    ]),
+                    'stdError' => '',
+                ],
+            ],
         ];
+    }
 
+    /**
+     * @dataProvider casesRun
+     */
+    public function testRun(array $expected, array $options, array $processProphecy): void
+    {
         $container = Robo::createDefaultContainer();
         Robo::setContainer($container);
 
         $mainStdOutput = new DummyOutput([]);
 
         $assetJar = new AssetJar();
-        $options = [
+        $options += [
             'assetJar' => $assetJar,
             'assetJarMapping' => ['invalidFiles' => ['compassValidate', 'files']],
         ];
@@ -115,16 +160,7 @@ class CompassValidateTaskTest extends Unit
         );
 
         $processIndex = count(DummyProcess::$instances);
-
-        DummyProcess::$prophecy[$processIndex] = [
-            'exitCode' => 0,
-            'stdOutput' => implode("\n", [
-                '  invalid a.css',
-                '  invalid b.css',
-                '',
-            ]),
-            'stdError' => '',
-        ];
+        DummyProcess::$prophecy[$processIndex] = $processProphecy;
 
         $task->setLogger($container->get('logger'));
         $task->setOutput($mainStdOutput);
@@ -132,16 +168,21 @@ class CompassValidateTaskTest extends Unit
         $result = $task->run();
 
         $this->tester->assertEquals(
-            $expectedExitCode,
+            $expected['exitCode'],
             $result->getExitCode(),
             'Exit code is different than the expected.'
         );
 
-        $invalidFiles = $task->getAssetJarValue('invalidFiles');
         $this->tester->assertEquals(
-            $expectedInvalidFiles,
-            $invalidFiles,
-            'Output equals'
+            $expected['invalidFiles'],
+            $task->getAssetJarValue('invalidFiles'),
+            'AssetJar content: invalidFiles'
+        );
+
+        $this->tester->assertEquals(
+            $expected['invalidFiles'],
+            $result['invalidFiles'],
+            'Result content: invalidFiles'
         );
     }
 }

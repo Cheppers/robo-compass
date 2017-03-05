@@ -25,6 +25,28 @@ class CompassValidateTask extends BaseTask
         'invalidFiles' => [],
     ];
 
+    // region Option - failOnInvalid.
+    /**
+     * @var bool
+     */
+    protected $failOnInvalid = true;
+
+    public function getFailOnInvalid(): bool
+    {
+        return $this->failOnInvalid;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setFailOnInvalid(bool $value)
+    {
+        $this->failOnInvalid = $value;
+
+        return $this;
+    }
+    // endregion
+
     /**
      * {@inheritdoc}
      */
@@ -40,6 +62,13 @@ class CompassValidateTask extends BaseTask
     {
         parent::setOptions($options);
         $this->setOptionsCommon($options);
+        foreach ($options as $optionName => $optionValue) {
+            switch ($optionName) {
+                case 'failOnInvalid':
+                    $this->setFailOnInvalid($optionValue);
+                    break;
+            }
+        }
 
         return $this;
     }
@@ -63,7 +92,10 @@ class CompassValidateTask extends BaseTask
      */
     protected function getTaskResultCode(): int
     {
-        if ($this->actionExitCode === 0 && $this->assets['invalidFiles']) {
+        if ($this->actionExitCode === 0
+            && $this->assets['invalidFiles']
+            && $this->getFailOnInvalid()
+        ) {
             return 1;
         }
 
