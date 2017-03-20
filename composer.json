@@ -15,8 +15,8 @@
     },
     "require-dev": {
         "cheppers/git-hooks": "^0.0",
-        "cheppers/robo-git": "^0.0.3",
-        "cheppers/robo-phpcs": "^0.0.12",
+        "cheppers/robo-git": "^0.0",
+        "cheppers/robo-phpcs": "^0.0",
         "codeception/codeception": "^2.2",
         "danielstjules/stringy": "^2.3",
         "symfony/finder": "^3.2",
