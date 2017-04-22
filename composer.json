@@ -10,7 +10,7 @@
     "prefer-stable": true,
     "require": {
         "php": ">=7.1",
-        "cheppers/asset-jar": "^0.0.1",
+        "cheppers/asset-jar": "^0.0",
         "consolidation/robo": "^1.0"
     },
     "require-dev": {
@@ -18,7 +18,7 @@
         "cheppers/robo-git": "^0.0",
         "cheppers/robo-phpcs": "^0.0",
         "codeception/codeception": "^2.2",
-        "danielstjules/stringy": "^2.3",
+        "danielstjules/stringy": "^3.0",
         "symfony/finder": "^3.2",
         "webmozart/path-util": "^2.3"
     },
