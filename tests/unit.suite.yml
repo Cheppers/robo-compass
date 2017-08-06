@@ -3,4 +3,4 @@ class_name: UnitTester
 modules:
     enabled:
         - Asserts
-        - \Cheppers\Robo\Compass\Test\Helper\Unit
+        - \Sweetchuck\Robo\Compass\Test\Helper\Unit

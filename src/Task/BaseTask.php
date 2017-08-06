@@ -1,9 +1,7 @@
 <?php
 
-namespace Cheppers\Robo\Compass\Task;
+namespace Sweetchuck\Robo\Compass\Task;
 
-use Cheppers\AssetJar\AssetJarAware;
-use Cheppers\AssetJar\AssetJarAwareInterface;
 use Robo\Common\OutputAwareTrait;
 use Robo\Contract\CommandInterface;
 use Robo\Contract\OutputAwareInterface;
@@ -12,9 +10,8 @@ use Robo\Task\BaseTask as RoboBaseTask;
 use Robo\TaskInfo;
 use Symfony\Component\Process\Process;
 
-abstract class BaseTask extends RoboBaseTask implements CommandInterface, AssetJarAwareInterface, OutputAwareInterface
+abstract class BaseTask extends RoboBaseTask implements CommandInterface, OutputAwareInterface
 {
-    use AssetJarAware;
     use OutputAwareTrait;
 
     /**
@@ -52,17 +49,17 @@ abstract class BaseTask extends RoboBaseTask implements CommandInterface, AssetJ
      */
     protected $assets = [];
 
-    //region Options.
-    //region Option - action.
+    // region Options.
+    // region Option - action.
     protected $action = '';
 
     public function getAction(): string
     {
         return $this->action;
     }
-    //endregion
+    // endregion
 
-    //region Option - workingDirectory.
+    // region Option - workingDirectory.
     /**
      * @var string
      */
@@ -82,9 +79,9 @@ abstract class BaseTask extends RoboBaseTask implements CommandInterface, AssetJ
 
         return $this;
     }
-    //endregion
+    // endregion
 
-    //region Option - bundleExecutable.
+    // region Option - bundleExecutable.
     /**
      * @var string
      */
@@ -104,9 +101,9 @@ abstract class BaseTask extends RoboBaseTask implements CommandInterface, AssetJ
 
         return $this;
     }
-    //endregion
+    // endregion
 
-    //region Option - compassExecutable.
+    // region Option - compassExecutable.
     /**
      * @var string
      */
@@ -126,8 +123,30 @@ abstract class BaseTask extends RoboBaseTask implements CommandInterface, AssetJ
 
         return $this;
     }
-    //endregion
-    //endregion
+    // endregion
+
+    // region Option - assetNamePrefix.
+    /**
+     * @var string
+     */
+    protected $assetNamePrefix = '';
+
+    public function getAssetNamePrefix(): string
+    {
+        return $this->assetNamePrefix;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setAssetNamePrefix(string $value)
+    {
+        $this->assetNamePrefix = $value;
+
+        return $this;
+    }
+    // endregion
+    // endregion
 
     /**
      * {@inheritdoc}
@@ -166,12 +185,8 @@ abstract class BaseTask extends RoboBaseTask implements CommandInterface, AssetJ
     {
         foreach ($option as $name => $value) {
             switch ($name) {
-                case 'assetJar':
-                    $this->setAssetJar($value);
-                    break;
-
-                case 'assetJarMapping':
-                    $this->setAssetJarMapping($value);
+                case 'assetNamePrefix':
+                    $this->setAssetNamePrefix($value);
                     break;
 
                 case 'workingDirectory':
@@ -281,7 +296,6 @@ abstract class BaseTask extends RoboBaseTask implements CommandInterface, AssetJ
             ->runHeader()
             ->runDoIt()
             ->runProcessOutputs()
-            ->runReleaseAssets()
             ->runReturn();
     }
 
@@ -320,32 +334,29 @@ abstract class BaseTask extends RoboBaseTask implements CommandInterface, AssetJ
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    protected function runReleaseAssets()
-    {
-        if ($this->hasAssetJar()) {
-            $assetJar = $this->getAssetJar();
-            foreach ($this->assets as $name => $value) {
-                $mapping = $this->getAssetJarMap($name);
-                if ($mapping) {
-                    $assetJar->setValue($mapping, $value);
-                }
-            }
-        }
-
-        return $this;
-    }
-
     protected function runReturn(): Result
     {
         return new Result(
             $this,
             $this->getTaskResultCode(),
             $this->getTaskResultMessage(),
-            $this->assets
+            $this->getAssetsWithPrefixedNames()
         );
+    }
+
+    protected function getAssetsWithPrefixedNames(): array
+    {
+        $prefix = $this->getAssetNamePrefix();
+        if (!$prefix) {
+            return $this->assets;
+        }
+
+        $data = [];
+        foreach ($this->assets as $key => $value) {
+            $data["{$prefix}{$key}"] = $value;
+        }
+
+        return $data;
     }
 
     protected function runCallback(string $type, string $data): void

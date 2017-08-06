@@ -1,6 +1,6 @@
 <?php
 
-namespace Cheppers\Robo\Compass\Option;
+namespace Sweetchuck\Robo\Compass\Option;
 
 trait CommonOption
 {

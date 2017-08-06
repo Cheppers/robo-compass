@@ -1,8 +1,8 @@
 <?php
 
-namespace Cheppers\Robo\Compass\Test\Helper\RoboFiles;
+namespace Sweetchuck\Robo\Compass\Test\Helper\RoboFiles;
 
-use Cheppers\Robo\Compass\CompassTaskLoader;
+use Sweetchuck\Robo\Compass\CompassTaskLoader;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Robo\Contract\TaskInterface;

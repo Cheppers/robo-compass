@@ -1,8 +1,8 @@
 <?php
 
-namespace Cheppers\Robo\Compass\Test\Helper\Dummy;
+namespace Sweetchuck\Robo\Compass\Test\Helper\Dummy;
 
-class Process extends \Symfony\Component\Process\Process
+class DummyProcess extends \Symfony\Component\Process\Process
 {
     /**
      * @var array
