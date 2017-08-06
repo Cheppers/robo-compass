@@ -1,14 +1,14 @@
 <?php
 
-namespace Cheppers\Robo\Compass\Test\Task;
+namespace Sweetchuck\Robo\Compass\Test\Task;
 
-use Cheppers\Robo\Compass\Task\CompassCleanTask;
+use Sweetchuck\Robo\Compass\Task\CompassCleanTask;
 use Codeception\Test\Unit;
 
 class CompassCleanTaskTest extends Unit
 {
     /**
-     * @var \Cheppers\Robo\Compass\Test\UnitTester
+     * @var \Sweetchuck\Robo\Compass\Test\UnitTester
      */
     protected $tester;
 

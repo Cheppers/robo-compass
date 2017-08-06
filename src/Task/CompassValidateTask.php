@@ -1,8 +1,8 @@
 <?php
 
-namespace Cheppers\Robo\Compass\Task;
+namespace Sweetchuck\Robo\Compass\Task;
 
-use Cheppers\Robo\Compass\Option\CommonOption;
+use Sweetchuck\Robo\Compass\Option\CommonOption;
 
 class CompassValidateTask extends BaseTask
 {

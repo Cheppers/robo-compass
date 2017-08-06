@@ -1,13 +1,13 @@
 <?php
 
-namespace Cheppers\Robo\Compass;
+namespace Sweetchuck\Robo\Compass;
 
 use Robo\Collection\CollectionBuilder;
 
 trait CompassTaskLoader
 {
     /**
-     * @return \Cheppers\Robo\Compass\Task\CompassCompileTask|\Robo\Collection\CollectionBuilder
+     * @return \Sweetchuck\Robo\Compass\Task\CompassCompileTask|\Robo\Collection\CollectionBuilder
      */
     protected function taskCompassCompile(array $options = []): CollectionBuilder
     {
@@ -15,7 +15,7 @@ trait CompassTaskLoader
     }
 
     /**
-     * @return \Cheppers\Robo\Compass\Task\CompassCleanTask|\Robo\Collection\CollectionBuilder
+     * @return \Sweetchuck\Robo\Compass\Task\CompassCleanTask|\Robo\Collection\CollectionBuilder
      */
     protected function taskCompassClean(array $options = []): CollectionBuilder
     {
@@ -23,7 +23,7 @@ trait CompassTaskLoader
     }
 
     /**
-     * @return \Cheppers\Robo\Compass\Task\CompassValidateTask|\Robo\Collection\CollectionBuilder
+     * @return \Sweetchuck\Robo\Compass\Task\CompassValidateTask|\Robo\Collection\CollectionBuilder
      */
     protected function taskCompassValidate(array $options = []): CollectionBuilder
     {

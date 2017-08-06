@@ -1,5 +1,5 @@
 
-namespace: Cheppers\Robo\Compass\Test
+namespace: Sweetchuck\Robo\Compass\Test
 
 actor: Tester
 

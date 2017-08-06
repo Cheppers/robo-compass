@@ -1,5 +1,5 @@
 {
-    "name": "cheppers/robo-compass",
+    "name": "sweetchuck/robo-compass",
     "description": "Wrapper Robo task for Compass commands.",
     "license": "GPL-2.0",
     "config": {
@@ -10,36 +10,37 @@
     "prefer-stable": true,
     "require": {
         "php": ">=7.1",
-        "cheppers/asset-jar": "^0.0",
         "consolidation/robo": "^1.0"
     },
     "require-dev": {
-        "cheppers/git-hooks": "^0.0",
-        "cheppers/robo-git": "^0.0",
-        "cheppers/robo-phpcs": "^0.0",
         "codeception/codeception": "^2.2",
         "danielstjules/stringy": "^3.0",
+        "sweetchuck/codeception-module-robo-task-runner": "^0.0.1",
+        "sweetchuck/git-hooks": "^0.0",
+        "sweetchuck/robo-git": "^0.0",
+        "sweetchuck/robo-phpcs": "^0.0",
         "symfony/finder": "^3.2",
         "webmozart/path-util": "^2.3"
     },
     "autoload": {
         "psr-4": {
-            "Cheppers\\Robo\\Compass\\": "src/"
+            "Sweetchuck\\Robo\\Compass\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Cheppers\\Robo\\Compass\\Test\\Helper\\": "tests/_support/Helper/",
-            "Cheppers\\Robo\\Compass\\Tests\\Acceptance\\": "tests/acceptance/",
-            "Cheppers\\Robo\\Compass\\Tests\\Unit\\": "tests/unit/"
+            "Sweetchuck\\Robo\\Compass\\Composer\\": "src-dev/Composer/",
+            "Sweetchuck\\Robo\\Compass\\Test\\Helper\\": "tests/_support/Helper/",
+            "Sweetchuck\\Robo\\Compass\\Tests\\Acceptance\\": "tests/acceptance/",
+            "Sweetchuck\\Robo\\Compass\\Tests\\Unit\\": "tests/unit/"
         }
     },
     "scripts": {
         "post-install-cmd": [
-            "\\Cheppers\\Robo\\Compass\\Composer\\Scripts::postInstallCmd"
+            "\\Sweetchuck\\Robo\\Compass\\Composer\\Scripts::postInstallCmd"
         ],
         "post-update-cmd": [
-            "\\Cheppers\\Robo\\Compass\\Composer\\Scripts::postUpdateCmd"
+            "\\Sweetchuck\\Robo\\Compass\\Composer\\Scripts::postUpdateCmd"
         ]
     }
 }

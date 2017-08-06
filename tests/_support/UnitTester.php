@@ -1,6 +1,6 @@
 <?php
 
-namespace Cheppers\Robo\Compass\Test;
+namespace Sweetchuck\Robo\Compass\Test;
 
 /**
  * Inherited Methods

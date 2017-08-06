@@ -1,9 +1,9 @@
 <?php
 
-namespace Cheppers\Robo\Compass\Test\Task;
+namespace Sweetchuck\Robo\Compass\Test\Task;
 
-use Cheppers\Robo\Compass\Test\AcceptanceTester;
-use Cheppers\Robo\Compass\Test\Helper\RoboFiles\CompassRoboFile;
+use Sweetchuck\Robo\Compass\Test\AcceptanceTester;
+use Sweetchuck\Robo\Compass\Test\Helper\RoboFiles\CompassRoboFile;
 use Symfony\Component\Filesystem\Filesystem;
 
 class CompassTaskCest

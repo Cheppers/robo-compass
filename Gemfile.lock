@@ -30,7 +30,7 @@ DEPENDENCIES
   compass-validator (>= 3.0.1)
 
 RUBY VERSION
-   ruby 2.3.1p112
+   ruby 2.3.1
 
 BUNDLED WITH
    1.14.5

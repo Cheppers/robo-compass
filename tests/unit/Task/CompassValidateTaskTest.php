@@ -1,19 +1,19 @@
 <?php
 
-namespace Cheppers\Robo\Compass\Test\Task;
+namespace Sweetchuck\Robo\Compass\Test\Task;
 
-use Cheppers\AssetJar\AssetJar;
-use Cheppers\Robo\Compass\Task\CompassValidateTask;
-use Cheppers\Robo\Compass\Test\Helper\Dummy\Output as DummyOutput;
-use Cheppers\Robo\Compass\Test\Helper\Dummy\Process as DummyProcess;
+use Sweetchuck\Robo\Compass\Task\CompassValidateTask;
+use Sweetchuck\Codeception\Module\RoboTaskRunner\DummyOutput;
+use Sweetchuck\Robo\Compass\Test\Helper\Dummy\DummyProcess;
 use Codeception\Test\Unit;
 use Codeception\Util\Stub;
 use Robo\Robo;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class CompassValidateTaskTest extends Unit
 {
     /**
-     * @var \Cheppers\Robo\Compass\Test\UnitTester
+     * @var \Sweetchuck\Robo\Compass\Test\UnitTester
      */
     protected $tester;
 
@@ -99,6 +99,7 @@ class CompassValidateTaskTest extends Unit
                 ],
                 [
                     'failOnInvalid' => false,
+                    'assetNamePrefix' => 'foo:',
                 ],
                 [
                     'exitCode' => 0,
@@ -120,6 +121,7 @@ class CompassValidateTaskTest extends Unit
                 ],
                 [
                     'failOnInvalid' => true,
+                    'assetNamePrefix' => 'bar:',
                 ],
                 [
                     'exitCode' => 0,
@@ -142,15 +144,13 @@ class CompassValidateTaskTest extends Unit
         $container = Robo::createDefaultContainer();
         Robo::setContainer($container);
 
-        $mainStdOutput = new DummyOutput([]);
-
-        $assetJar = new AssetJar();
-        $options += [
-            'assetJar' => $assetJar,
-            'assetJarMapping' => ['invalidFiles' => ['compassValidate', 'files']],
+        $outputConfig = [
+            'verbosity' => OutputInterface::VERBOSITY_DEBUG,
+            'color' => false,
         ];
+        $mainStdOutput = new DummyOutput($outputConfig);
 
-        /** @var \Cheppers\Robo\Compass\Task\CompassValidateTask $task */
+        /** @var \Sweetchuck\Robo\Compass\Task\CompassValidateTask $task */
         $task = Stub::construct(
             CompassValidateTask::class,
             [$options, []],
@@ -173,15 +173,11 @@ class CompassValidateTaskTest extends Unit
             'Exit code is different than the expected.'
         );
 
-        $this->tester->assertEquals(
-            $expected['invalidFiles'],
-            $task->getAssetJarValue('invalidFiles'),
-            'AssetJar content: invalidFiles'
-        );
+        $assetNamePrefix = $options['assetNamePrefix'] ?? '';
 
         $this->tester->assertEquals(
             $expected['invalidFiles'],
-            $result['invalidFiles'],
+            $result["{$assetNamePrefix}invalidFiles"],
             'Result content: invalidFiles'
         );
     }
